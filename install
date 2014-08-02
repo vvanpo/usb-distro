@@ -1,0 +1,14 @@
+#!/bin/env python3
+
+import argparse
+
+def arguments():
+	parser = argparse.ArgumentParser(description='A simple command-line installer for usb-distro.')
+	parser.add_argument('device')
+	return parser.parse_args()
+
+def main():
+	args = arguments()
+
+if __name__ == '__main__':
+	main()
