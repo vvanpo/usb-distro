@@ -9,6 +9,8 @@ def arguments():
 
 def main():
 	args = arguments()
+	device = args.device
+
 
 if __name__ == '__main__':
 	main()
