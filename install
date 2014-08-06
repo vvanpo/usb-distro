@@ -1,17 +1,23 @@
-#!/usr/bin/env python3
+#!/bin/bash
 
-import argparse, os, tempfile, urlib.request
+cd $(mktemp -d) || exit 1
 
-def arguments():
-	parser = argparse.ArgumentParser(description='A simple command-line installer for usb-distro.')
-	#parser.add_argument('device')
-	return parser.parse_args()
+mkdir -p usr etc root proc dev/pts
+ln -s usr/bin bin
+ln -s usr/sbin sbin
 
-def main():
-	args = arguments()
-	with tempfile.TemporaryDirectory() as path:
-		os.chdir(path)
-		os.mkdir('store')
+mount --bind /nix/var/nix/profiles/default usr
+mount --bind /proc proc
+mount --bind /dev dev
+mount --bind /dev/pts dev/pts
 
-if __name__ == '__main__':
-	main()
+echo 'root:x:0:0:root:/root:/bin/bash' > etc/passwd
+echo 'root:x:0:' > /etc/group
+echo 'http://nixos.org/channels/nixpkgs-unstable nixpkgs' > root/.nix-channels
+
+echo 'nixbld:x:30000:30000:Nix build user:/var/empty:/noshell' >> etc/passwd
+echo 'nixbld:!:30000:nixbld' >> etc/group
+
+chroot . nix-channel --update
+
+
